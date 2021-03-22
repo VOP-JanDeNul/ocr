@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Businesscards.Views.Controls"
+             xmlns:local="clr-namespace:Businesscards" 
+             x:Class="Businesscards.Views.BusinesscardEntryPage"
+             Title="Businesscard Entry"
+             x:Name="this">
+
+
+    <!-- Layout children vertically -->
+    <ScrollView>
+
+        <StackLayout Margin="15">
+
+<!--
+            <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" WidthRequest="400" HorizontalOptions="Center">
+                <controls:FloatingLabelInput Title="Username" HorizontalOptions="Center" Margin="0,20,20,10" />
+                <controls:FloatingLabelInput Title="Password" HorizontalOptions="Center" Margin="0,10,20,10" />
+                <controls:FloatingLabelInput Title="Company" HorizontalOptions="Center" Margin="0,10,20,10" />
+            </StackLayout>
+-->
+            <!-- TEST -->
+            <!-- TEST -->
+            <!-- TEST -->
+
+
+            <Grid Margin="0, 20, 0, 0">
+                <Entry x:Name="EntryField" 
+                   HeightRequest="46" 
+                   Text="{Binding Text, Source={x:Reference this}}" 
+                      
+                   Unfocused="Handle_Unfocused" 
+                   Focused="Handle_Focused">
+                </Entry>
+                <Label x:Name="LabelTitle" 
+                   Text="{Binding Title, Source={x:Reference this}}" VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Handle_Tapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Grid>
+
+            <Grid Margin="0, 20, 0, 0">
+                <Entry x:Name="EntryField2" 
+                   HeightRequest="46" 
+                   Text="{Binding Text2, Source={x:Reference this}}" 
+                      
+                   Unfocused="Handle_Unfocused" 
+                   Focused="Handle_Focused">
+                </Entry>
+                <Label x:Name="LabelTitle2" 
+                   Text="{Binding Title, Source={x:Reference this}}" VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Handle_Tapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Grid>
+
+
+            <!-- TEST -->
+            <!-- TEST -->
+            <!-- TEST -->
+
+
+            <!-- COMPANY 
+            
+            
+            <Grid >
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Entry  x:Name="companyEntry"
+                        Placeholder="Enter the Company"
+                        Text="{Binding Company}"
+                        ReturnType="Next" 
+                        Grid.Column="0" 
+                        Unfocused="Handle_Unfocused" 
+                        Focused="Handle_Focused"  />
+                <Label x:Name="companyTitle" 
+                       Text="{Binding Company}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Handle_Tapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Button ClassId="companySwap" 
+                        Image="drawable/swap2" 
+                        Grid.Column="1" 
+                        Clicked="OnSwapClicked"/>
+                
+            </Grid>
+-->
+
+            <Grid >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackLayout Grid.Column="0"
+                        Grid.Row="0">
+                    <Label Text=" Company:" VerticalOptions="Start"></Label>
+                    <Entry  x:Name="companyEntry"
+                        Placeholder="Enter the Company"
+                        Text="{Binding Company}"
+                        ReturnType="Next" 
+                        Grid.Column="0" 
+                        Grid.Row="0"/>
+</StackLayout>
+                    <Button ClassId="companySwap" 
+                        Image="drawable/icon_swap" 
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Clicked="OnSwapClicked"/>
+                
+
+                <!-- NAME -->
+                <StackLayout Grid.Column="0"
+                        Grid.Row="1">
+                    <Label Text=" Name:" VerticalOptions="Start"></Label>
+                    <Entry  x:Name="nameEntry"
+                          
+                        Placeholder="Enter the Name"
+                        Text="{Binding Name}"
+                        ReturnType="Next" 
+                        />
+
+                </StackLayout>
+                <Button ClassId="nameSwap" 
+                        Image="drawable/icon_swap" 
+                        Grid.Column="1" 
+                        Grid.Row="1"
+                        Clicked="OnSwapClicked"/>
+
+
+
+                <!-- NATURE -->
+
+                <StackLayout Grid.Column="0"
+                        Grid.Row="2">
+                    <Label Text=" Nature:" VerticalOptions="Start"></Label>
+                    <Entry  x:Name="natureEntry"
+                        Placeholder="Enter the Nature"
+                        Text="{Binding Nature}"
+                        ReturnType="Next" 
+                        Grid.Column="0"
+                        Grid.Row="2"/>
+                </StackLayout>
+                <Button ClassId="natureSwap" 
+                        Image="drawable/icon_swap" 
+                        Grid.Column="1" 
+                        Grid.Row="2"
+                        Clicked="OnSwapClicked"/>
+
+
+
+                <!-- JOBTITLE -->
+
+                <StackLayout Grid.Column="0"
+                        Grid.Row="3">
+                    <Label Text=" Job title:" VerticalOptions="Start"></Label>
+                    <Entry  x:Name="jobtitleEntry"
+                        Placeholder="Enter the Job Title"
+                        Text="{Binding Jobtitle}"
+                        ReturnType="Next" 
+                        Grid.Column="0"
+                        Grid.Row="3"/>
+                </StackLayout>
+                <Button ClassId="jobtitleSwap" 
+                        Image="drawable/icon_swap" 
+                        Grid.Column="1" 
+                        Grid.Row="3"
+                        Clicked="OnSwapClicked"/>
+
+
+
+                <!-- PHONE -->
+                <StackLayout Grid.Column="0"
+                        Grid.Row="4">
+                    <Label Text=" Phone number:" VerticalOptions="Start"></Label>
+                    <Entry  x:Name="phoneEntry"
+                        Placeholder="Enter the Phone number"
+                        Text="{Binding Phone}"
+                        Keyboard="Telephone"
+                        ReturnType="Next" 
+                        Grid.Column="0"
+                        Grid.Row="4"/>
+                </StackLayout>
+                <Button ClassId="phoneSwap" 
+                        Image="drawable/icon_swap" 
+                        Grid.Column="1" 
+                        Grid.Row="4"
+                        Clicked="OnSwapClicked"/>
+
+
+
+                <!-- MOBILE -->
+
+                <StackLayout Grid.Column="0"
+                        Grid.Row="5">
+                    <Label Text=" Mobile number:" VerticalOptions="Start"></Label>
+                    <Entry  x:Name="mobileEntry"
+                        Placeholder="Enter the Mobile number"
+                        Text="{Binding Mobile}"
+                        Keyboard="Telephone" 
+                        ReturnType="Next" 
+                        Grid.Column="0"
+                        Grid.Row="5" />
+                </StackLayout>
+                <Button ClassId="mobileSwap" 
+                        Image="drawable/icon_swap" 
+                        Grid.Column="1"
+                        Grid.Row="5"
+                        Clicked="OnSwapClicked"/>
+
+
+
+                <!-- EMAIL -->
+
+                <StackLayout Grid.Column="0"
+                        Grid.Row="6">
+                    <Label Text=" Email:" VerticalOptions="Start"></Label>
+                    <Entry  x:Name="emailEntry"
+                        Placeholder="Enter the Email"
+                        Text="{Binding Email}"
+                        Keyboard="Email"
+                        ReturnType="Next" 
+                        Grid.Column="0"
+                        Grid.Row="6" />
+                </StackLayout>
+                <Button ClassId="emailSwap" 
+                        Image="drawable/icon_swap"
+                        Grid.Column="1" 
+                        Grid.Row="6"
+                        Clicked="OnSwapClicked" />
+
+
+
+                <!-- FAX -->
+                <StackLayout Grid.Column="0"
+                        Grid.Row="7">
+                    <Label Text=" Fax number:" VerticalOptions="Start"></Label>
+                <Entry  x:Name="faxEntry"   
+                        Placeholder="Enter the Fax number"
+                        Text="{Binding Fax}"
+                        Keyboard="Telephone"
+                        ReturnType="Next" 
+                        Grid.Column="0"
+                        Grid.Row="7" />
+ </StackLayout>
+                <Button ClassId="faxSwap" 
+                        Image="drawable/icon_swap"
+                        Grid.Column="1" 
+                        Grid.Row="7"
+                        Clicked="OnSwapClicked" />
+               
+
+                <!-- ADDRESS -->
+                    <StackLayout Grid.Column="0"
+                        Grid.Row="8">
+                        <Label Text=" Address:" VerticalOptions="Start"></Label>
+                        <Entry  x:Name="addressEntry"
+                        Placeholder="Enter the Address"
+                        Text="{Binding Address}"
+                        ReturnType="Done"    
+                        Grid.Column="0" 
+                        Grid.Row="8" />
+</StackLayout>
+                        <Button ClassId="addressSwap" 
+                        Image="drawable/icon_swap"
+                        Grid.Column="1" 
+                        Grid.Row="8"
+                        Clicked="OnSwapClicked" />
+                    
+            </Grid>
+
+
+
+
+            <Image Source="{Binding FileName}"/>
+
+
+            <!--Automatisch eigen naam/mail laten invullen?-->
+            <!--<Editor x:Name="originEditor"
+                    Placeholder="Enter your name/email"
+                    Text="{Binding Origin}"
+                    HeightRequest="45" />-->
+
+
+            <StackLayout Orientation="Horizontal">
+                <Label x:Name="mailLabel" 
+                       Text="Mail VCF" 
+                       TextColor="#BA0C2F" 
+                       FontSize = "20"/>
+
+                <CheckBox x:Name="checkBox"  
+                          Color="#BA0C2F"/>
+
+            </StackLayout>
+
+            <!-- Layout children in two columns -->
+            <Grid ColumnDefinitions="*,*" Padding="0,0,0,20">
+
+                <Button Text="Save"
+                        Clicked="OnSaveButtonClicked" />
+
+                <Button Grid.Column="1"
+                        Text="Delete"
+                        Clicked="OnDeleteButtonClicked"/>
+
+            </Grid>
+
+        </StackLayout>
+
+    </ScrollView>
+
+</ContentPage>
