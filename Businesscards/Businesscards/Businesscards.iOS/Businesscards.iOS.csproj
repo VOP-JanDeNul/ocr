@@ -112,15 +112,6 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon20.png">
       <Visible>false</Visible>
     </ImageAsset>
-    <BundleResource Include="Resources\xamarin_logo.png" />
-    <BundleResource Include="Resources\xamarin_logo%402x.png" />
-    <BundleResource Include="Resources\xamarin_logo%403x.png" />
-    <ImageAsset Include="Assets.xcassets\icon_camera.imageset\Contents.json">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\icon_camera.imageset\icon_camera.png">
-      <Visible>false</Visible>
-    </ImageAsset>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +123,9 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.AI.FormRecognizer">
+      <Version>3.1.0-beta.1</Version>
+    </PackageReference>
     <PackageReference Include="sqlite-net-pcl">
       <Version>1.7.335</Version>
     </PackageReference>
@@ -144,12 +138,14 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Businesscards\Businesscards.csproj">
-      <Project>{B6AE93B7-DD11-449B-8BC3-96B05014A33A}</Project>
+      <Project>{6A542C72-0EDF-40A1-B5BA-E03E39F5D1A4}</Project>
       <Name>Businesscards</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\icon_camera.png" />
+    <BundleResource Include="Resources\splash_screen.png" />
+    <BundleResource Include="Resources\JDNLogo_small.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\icon_edit.png" />
@@ -161,9 +157,15 @@
     <BundleResource Include="Resources\JDNLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\swap2.png" />
+    <BundleResource Include="Resources\icon_swap.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\icon_swap.png" />
+    <BundleResource Include="Resources\JDNLogo_gray.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\icon_info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\icon_mail.png" />
   </ItemGroup>
 </Project>

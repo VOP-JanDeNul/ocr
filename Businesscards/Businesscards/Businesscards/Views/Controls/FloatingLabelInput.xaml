@@ -4,8 +4,12 @@
              x:Class="Businesscards.Views.Controls.FloatingLabelInput"
              x:Name="this" >
 
+    
     <ContentView.Content>
+        <!-- User control is a composition of an Entry control and a Label control -->
+        <!-- The Grid layout is used to position the label on top of the entry field -->
         <Grid>
+            
             <Entry x:Name="EntryField" 
                    Completed="Handle_Completed" 
                    HeightRequest="46" 
@@ -14,16 +18,28 @@
                    Keyboard="{Binding Keyboard, Source={x:Reference this}}"
                    TextColor="#2D2A29" 
                    Unfocused="Handle_Unfocused" 
-                   Focused="Handle_Focused">
+                   Focused="Handle_Focused"
+                   ClearButtonVisibility="WhileEditing">
             </Entry>
+            
+            
             <Label x:Name="LabelTitle" 
-                   Text="{Binding Title, Source={x:Reference this}}" TextColor="#2D2A29" VerticalOptions="Center">
+                   Text="{Binding Title, Source={x:Reference this}}" 
+                   TextColor="#808080" 
+                   VerticalOptions="Center">
+                
+                <!-- Placeholder sits on top of the Entry field. 
+                This can prevent users form focusing on the Entry field.
+                Here it passes the focus to the Entry field with the handler method Handle_Tapped -->
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Tapped="Handle_Tapped" />
                 </Label.GestureRecognizers>
+                
             </Label>
+            
         </Grid>
 
 
     </ContentView.Content>
+    
 </ContentView>

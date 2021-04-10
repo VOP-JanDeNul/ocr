@@ -5,73 +5,76 @@
              Title="Businesscards">
 
     <!-- Add an item to the toolbar -->
+    
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Example Item"
-                 IconImageSource="JDNLogo.png"
+                 IconImageSource="JDNLogo_small"
                  Order="Primary"
                  Priority="0" />
     </ContentPage.ToolbarItems>
 
     <StackLayout>
+
         <!-- Display businesscards in a list -->
         <CollectionView x:Name="collectionView"
+                        ItemsSource="{Binding Businesscards}"
                         Margin="20"
                         SelectionMode="Single"
                         SelectionChanged="OnSelectionChanged">
+
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical"
                                    ItemSpacing="10" />
             </CollectionView.ItemsLayout>
 
+
+
             <!-- Define the appearance of each item in the list -->
             <CollectionView.ItemTemplate>
                 <DataTemplate>
+
                     <StackLayout>
-                        <Label Text="{Binding Company}"
-                               FontSize="Medium" />
                         <Label Text="{Binding Name}"
+                               FontSize="Medium" />
+                        <Label Text="{Binding Company}"
                                FontSize="Medium"/>
                         <Label Text="{Binding Date}"
                                FontSize="Small"
                                TextColor="LightGray"/>
-
-                        <!--Welke velden in overzicht plaatsen -->
-
-                        <!--<Label Text="{Binding Nature}"
-                               FontSize="Medium"/>
-                        <Label Text="{Binding Jobtitle}"
-                               FontSize="Medium"/>
-                        <Label Text="{Binding Phone}"
-                               FontSize="Medium"/>
-                        <Label Text="{Binding Mobile}"
-                               FontSize="Medium"/>
-                        <Label Text="{Binding Email}"
-                               FontSize="Medium"/>
-                        <Label Text="{Binding Fax}"
-                               FontSize="Medium"/>
-                        <Label Text="{Binding Address}"
-                               FontSize="Medium"/>
-
-                        <Label Text="{Binding Date}"
-                               TextColor="Silver"
-                               FontSize="Small" />
-
-                        <Label Text="{Binding Origin}"
-                               FontSize="Medium"/>-->
                     </StackLayout>
+
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <ContentView>
+                    <StackLayout HorizontalOptions="CenterAndExpand"  VerticalOptions="CenterAndExpand">
+                        <Label Text="No business cards to process."
+                           Margin="10,25,10,30"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           HorizontalOptions="Fill"
+                           HorizontalTextAlignment="Center" />
+                        <Image Source="JDNLogo_gray" Margin="20,20,20,60"/>
+                    </StackLayout>
+                </ContentView>
+            </CollectionView.EmptyView>
+
         </CollectionView>
-
-
-
+        <ActivityIndicator x:Name="activityindicator"  
+                       IsRunning="False"  
+                       IsEnabled="False"  
+                       IsVisible="False"  
+                       Color="Red"  
+                       BackgroundColor="Transparent" />
+        <!-- 3 main buttons -->
         <Grid ColumnDefinitions="33.33*, 33.33*, 33.33*" ColumnSpacing="8"  >
-            <Button Grid.Column="0" HorizontalOptions="FillAndExpand" 
-                    Clicked="OnAddClicked" Image="drawable/icon_edit" HeightRequest="100"  />
-            <Button Grid.Column="1" HorizontalOptions="FillAndExpand" 
-                    Clicked="OnGaleryClicked" Image="drawable/icon_library" HeightRequest="100" ></Button>
-            <Button Grid.Column="2" HorizontalOptions="FillAndExpand" 
-                    Clicked="OnTakePictureClicked" Image="drawable/icon_camera" HeightRequest="100" ></Button>
+            <Button x:Name="manualButton" Grid.Column="0" HorizontalOptions="FillAndExpand" 
+                    Command="{Binding AddBusinessCardManually}" Image="icon_edit" HeightRequest="100"  />
+            <Button x:Name="galeryButton" Grid.Column="1" HorizontalOptions="FillAndExpand" 
+                    Command="{Binding AddBusinessCardGallery}" Image="icon_library" HeightRequest="100" ></Button>
+            <Button x:Name="cameraButton" Grid.Column="2" HorizontalOptions="FillAndExpand" 
+                    Command="{Binding AddBusinessCardCamera}" Image="icon_camera" HeightRequest="100" ></Button>
         </Grid>
 
 

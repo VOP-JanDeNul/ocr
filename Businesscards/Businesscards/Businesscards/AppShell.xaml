@@ -3,29 +3,107 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:views="clr-namespace:Businesscards.Views"
        Title="Businesscards"
+       Shell.TabBarIsVisible="False"
        x:Class="Businesscards.AppShell">
+    <!-- FlyoutWidth="400"
+         FlyoutHeight="200"
+         FlyoutIcon="flyouticon.png"
+         FlyoutBackgroundColor="AliceBlue" 
+         FlyoutBackgroundImage="photo.jpg"
+         FlyoutBackgroundImageAspect="AspectFill"-->
+    <!-- https://docs.microsoft.com/en-us/xamarin/xamarin-forms/app-fundamentals/shell/flyout -->
 
     <Shell.Resources>
-        <!-- Style Shell elements -->
-        <Style x:Key="BaseStyle"
-               TargetType="Element">
-            <Setter Property="Shell.BackgroundColor"
-                    Value="{StaticResource AppPrimaryColor}" />
-            <Setter Property="Shell.ForegroundColor"
-                    Value="{StaticResource SecondaryColor}" />
-            <Setter Property="Shell.TitleColor"
-                    Value="{StaticResource SecondaryColor}" />
-            <Setter Property="Shell.TabBarUnselectedColor"
-                    Value="#95FFFFFF"/>
+            <!-- Style Shell elements -->
+            <Style x:Key="BaseStyle"  TargetType="Element">
+                <Setter Property="Shell.BackgroundColor"  Value="{StaticResource AppPrimaryColor}" />
+                <Setter Property="Shell.ForegroundColor"  Value="{StaticResource SecondaryColor}" />
+                <Setter Property="Shell.TitleColor"       Value="{StaticResource SecondaryColor}" />
+                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
+                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
+            </Style>
+
+            <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
+            <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
+
+
+        <!--
+            Default Styles for all Flyout Items
+            https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyoutitem-and-menuitem-style-classes
+            -->
+        <Style Class="FlyoutItemLabelStyle" TargetType="Label">
+            <Setter Property="TextColor" Value="White"></Setter>
         </Style>
-        <Style TargetType="TabBar"
-               BasedOn="{StaticResource BaseStyle}" />
+        <Style Class="FlyoutItemLayoutStyle" TargetType="Layout" ApplyToDerivedTypes="True">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{x:OnPlatform UWP=Transparent, iOS=White}" />
+                                <Setter TargetName="FlyoutItemLabel" Property="Label.TextColor" Value="{StaticResource AppPrimaryColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#D0D0CE" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <!-- Custom Style you can apply to any Flyout Item -->
+        <Style Class="MenuItemLayoutStyle" TargetType="Layout" ApplyToDerivedTypes="True">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter TargetName="FlyoutItemLabel" Property="Label.TextColor" Value="{StaticResource AppPrimaryColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+
+
     </Shell.Resources>
 
-    <!-- Display a bottom tab bar containing two tabs -->
-    <TabBar>
-        <ShellContent Title="Businesscards"
-                      Icon="icon_feed.png"
-                      ContentTemplate="{DataTemplate views:BusinesscardsPage}" />
-    </TabBar>
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="Black" HeightRequest="115">
+                <Image Aspect="AspectFill"
+                       Source="denul_logo.png"
+                       Opacity="0.6" />
+                <Label Text="Settings"
+                       TextColor="White"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="End" />
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+
+    
+
+    
+    <!-- When the Flyout is visible this defines the content to display in the flyout. -->
+    
+    <FlyoutItem Title="Home" Icon="JDNLogo.png">
+        <ShellContent ContentTemplate="{DataTemplate views:BusinesscardsPage}" />
+    </FlyoutItem>
+    
+    
+    <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
+
+    <MenuItem Text="Origin" StyleClass="MenuItemLayoutStyle" Clicked="OnOriginMenuItemClicked" IconImageSource="icon_mail.png">
+    </MenuItem>
+
+    <MenuItem Text="Info" StyleClass="MenuItemLayoutStyle" Clicked="OnInfoMenuItemClicked" IconImageSource="icon_info.png">
+    </MenuItem>
+
 </Shell>

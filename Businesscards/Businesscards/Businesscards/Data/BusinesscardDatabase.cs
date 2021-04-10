@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Businesscards.Models;
+using SQLite;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SQLite;
-using System.Text;
-using Businesscards.Models;
 
 namespace Businesscards.Data
 {
@@ -19,13 +17,13 @@ namespace Businesscards.Data
 
         public Task<List<Businesscard>> GetBusinesscardsAsync()
         {
-            //Get all notes.
+            //Get all businesscards.
             return database.Table<Businesscard>().ToListAsync();
         }
 
         public Task<Businesscard> GetBusinesscardAsync(int id)
         {
-            // Get a specific note.
+            // Get a specific businesscard.
             return database.Table<Businesscard>()
                             .Where(i => i.Id == id)
                             .FirstOrDefaultAsync();
