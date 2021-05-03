@@ -1,4 +1,6 @@
-﻿namespace Businesscards.Services.ImageTransformation
+﻿using Businesscards.Models;
+
+namespace Businesscards.Services.ImageTransformation
 {
     public interface IImageTransformationService
     {
@@ -6,5 +8,7 @@
         // Makes it easy to later define extra functionality such as compression
         string ConvertImageToBase64(string path);
         string GetImagePath(string base64string);
+
+        void PrintCard(Businesscard card);
     }
 }

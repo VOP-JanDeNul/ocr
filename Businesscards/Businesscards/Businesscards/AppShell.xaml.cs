@@ -35,9 +35,18 @@ namespace Businesscards
 
             if (originPrompt != "" && originPrompt != null)
             {
-                user.OriginUser = originPrompt;
-                user.setOriginWithTxt();
+                if(originPrompt == "Remove 1234")
+                {
+                    user.deleteOriginTxt();
+                    user.OriginUser = null;
+                }
+                else
+                {
+                    user.OriginUser = originPrompt;
+                    user.setOriginWithTxt();
+                }
             }
+            
 
             Shell.Current.FlyoutIsPresented = false;
         }

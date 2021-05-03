@@ -1,5 +1,6 @@
 ﻿using Businesscards.Models;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Tesseract;
@@ -44,7 +45,7 @@ namespace Businesscards.Services.OCR
         {
             try
             {
-                Console.WriteLine("OCR - Entered the OCR program with path: " + imagePath + "\n");
+                Debug.WriteLine("OCR - Entered the OCR program with path: " + imagePath + "\n");
                 using (var engine = new TesseractEngine(Path.Combine(FileSystem.CacheDirectory, "tessdata"), "eng", EngineMode.Default))
                 {
                     // We think this Pix function is why this OCR framework doesn't work (libtonica library)
@@ -56,7 +57,7 @@ namespace Businesscards.Services.OCR
                             // but Tesseract returns only one page, so we convert this into a single line
                             string[] lines = new string[] { };
                             lines[0] = page.GetText();
-                            return analyzeText(lines);
+                            return await analyzeText(lines);
                         }
                     }
                 }

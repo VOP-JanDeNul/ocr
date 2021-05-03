@@ -13,6 +13,7 @@ namespace Businesscards.Services.Mail
     {
         private const string DestinationEmail = "jan.denul.vop@gmail.com";
         private const string Subject = "New Business Card";
+        // General structure of the email text
         private static string EmailContent = "This is an automated email from the Jan De Nul Business Card App.\n\nVisualization of the business card:\n" +
             "Name:\t\t{0}\n" +
             "Job title:\t\t{1}\n" +
@@ -48,9 +49,9 @@ namespace Businesscards.Services.Mail
             string CreationDate = card.Date.ToString();
             string Origin = card.Origin;
             string FileName = Name.Trim().Replace(" ", "_");
-            string data = card.Base64; // this is base64 of imageiVBORw0KGgoAAAANSUhEUgAAAcIAAAENC...................
+            string data = card.Base64;
 
-
+            // Add the information to the emailcontent
             string Result = string.Format(EmailContent, Name, JobTitle, Company, Nature, MobileNumber, PhoneNumber, EmailAdress, Fax, Address, Extra, CreationDate, Origin, FileName);
             var vcf = new StringBuilder();
 
@@ -71,6 +72,7 @@ namespace Businesscards.Services.Mail
 
             EmailMessage message = new EmailMessage(Subject, Result, DestinationEmail);
 
+            // Add all the information to a .vcf file and then add that as an attachment
             var fn = FileName + ".vcf";     // filename 
             try
             {
@@ -81,13 +83,10 @@ namespace Businesscards.Services.Mail
 
                 await Email.ComposeAsync(message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new MailException(ex.ToString());
             }
-            
         }
-
-
     }
 }

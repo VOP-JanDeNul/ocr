@@ -26,11 +26,11 @@
 
     <!-- Layout children vertically -->
     
-    <ScrollView>
+    <ScrollView x:Name="scrollView" Margin="0, 0, 0, 0">
 
 
 
-        <Grid  Padding="15,20,15,20">
+        <Grid  Padding="15,20,15,10">
 
                 
             <Grid.ColumnDefinitions>
@@ -51,17 +51,20 @@
                 <RowDefinition Height="Auto" />     <!-- 6: Nature -->
                 <RowDefinition Height="Auto" />     <!-- 7: Jobtitle -->
                 
-                <RowDefinition Height="Auto" />     <!-- 8: Phone -->
-                <RowDefinition Height="Auto" />     <!-- 9: Mobile -->
-                <RowDefinition Height="Auto" />     <!-- 10: Fax -->
+                <RowDefinition Height="Auto" />     <!-- 8: Phone Validation -->
+                <RowDefinition Height="Auto" />     <!-- 9: Phone -->
+                <RowDefinition Height="Auto" />     <!-- 10: Mobile Validation -->
+                <RowDefinition Height="Auto" />     <!-- 11: Mobile -->
+                <RowDefinition Height="Auto" />     <!-- 12: Fax Validation -->
+                <RowDefinition Height="Auto" />     <!-- 13: Fax -->
                 
-                <RowDefinition Height="Auto" />     <!-- 11: Street + number -->
-                <RowDefinition Height="Auto" />     <!-- 12: City + Postal code -->
-                <RowDefinition Height="Auto" />     <!-- 13: Extra -->
+                <RowDefinition Height="Auto" />     <!-- 14: Street + number -->
+                <RowDefinition Height="Auto" />     <!-- 15: City + Postal code -->
+                <RowDefinition Height="Auto" />     <!-- 16: Extra -->
                 
-                <RowDefinition Height="Auto" />     <!-- 14: Image -->
-                <RowDefinition Height="Auto" />     <!-- 15: Mail VCF Checkbox -->
-                <RowDefinition Height="Auto" />     <!-- 16: Buttons -->
+                <RowDefinition Height="Auto" />     <!-- 17: Image -->
+                <RowDefinition Height="Auto" />     <!-- 18: Mail VCF Checkbox -->
+                <RowDefinition Height="Auto" />     <!-- 19: Buttons -->
             </Grid.RowDefinitions>
 
 
@@ -214,6 +217,17 @@
                     Margin="0,0,0,15" >
             </Button>
 
+            <!-- PHONE VALIDATION -->
+
+            <Label  x:Name="phoneValidation"
+                    Grid.Column="0" 
+                    Grid.Row="8"
+                    Margin="0,0,0,5"
+                    IsVisible="{Binding Phone.IsVisible}"
+                    HeightRequest="{Binding Phone.HeightRequestLabel}"
+					Text="{Binding Phone.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+					Style="{StaticResource ValidationErrorLabelStyle}" >
+            </Label>
 
 
             <!-- PHONE -->
@@ -221,8 +235,8 @@
             <controls:FloatingLabelInput 
                     x:Name="phoneEntry"
                     Grid.Column="0" 
-                    Grid.Row="8"
-                    Text="{Binding Phone}"
+                    Grid.Row="9"
+                    Text="{Binding Phone.Value}"
                     Title="Phone number" 
                     Margin="0,0,20,20"
                     ReturnType="Next" 
@@ -231,21 +245,31 @@
 
             <Button ClassId="phoneSwap" 
                     Grid.Column="1"
-                    Grid.Row="8"
+                    Grid.Row="9"
                     Image="icon_swap" 
                     Clicked="OnSwapClicked"
                     Margin="0,0,0,15" >
             </Button>
 
+            <!-- MOBILE VALIDATION -->
 
+            <Label  x:Name="mobileValidation"
+                    Grid.Column="0" 
+                    Grid.Row="10"
+                    Margin="0,0,0,5"
+                    IsVisible="{Binding Mobile.IsVisible}"
+                    HeightRequest="{Binding Mobile.HeightRequestLabel}"
+					Text="{Binding Mobile.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+					Style="{StaticResource ValidationErrorLabelStyle}" >
+            </Label>
 
             <!-- MOBILE -->
 
             <controls:FloatingLabelInput 
                     x:Name="mobileEntry" 
                     Grid.Column="0" 
-                    Grid.Row="9"
-                    Text="{Binding Mobile}"
+                    Grid.Row="11"
+                    Text="{Binding Mobile.Value}"
                     Title="Mobile number" 
                     Margin="0,0,20,20"
                     ReturnType="Next" 
@@ -254,21 +278,31 @@
 
             <Button ClassId="mobileSwap" 
                     Grid.Column="1"
-                    Grid.Row="9"
+                    Grid.Row="11"
                     Image="icon_swap" 
                     Clicked="OnSwapClicked"
                     Margin="0,0,0,15" >
             </Button>
 
+            <!-- FAX VALIDATION -->
 
+            <Label  x:Name="faxValidation"
+                    Grid.Column="0" 
+                    Grid.Row="12"
+                    Margin="0,0,0,5"
+                    IsVisible="{Binding Fax.IsVisible}"
+                    HeightRequest="{Binding Fax.HeightRequestLabel}"
+					Text="{Binding Fax.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+					Style="{StaticResource ValidationErrorLabelStyle}" >
+            </Label>
 
             <!-- FAX -->
 
             <controls:FloatingLabelInput 
                     x:Name="faxEntry" 
                     Grid.Column="0" 
-                    Grid.Row="10"
-                    Text="{Binding Fax}"
+                    Grid.Row="13"
+                    Text="{Binding Fax.Value}"
                     Title="Fax number" 
                     Margin="0,0,20,20"
                     ReturnType="Next" 
@@ -277,7 +311,7 @@
 
             <Button ClassId="faxSwap" 
                     Grid.Column="1"
-                    Grid.Row="10"
+                    Grid.Row="13"
                     Image="icon_swap" 
                     Clicked="OnSwapClicked"
                     Margin="0,0,0,15" >
@@ -290,7 +324,7 @@
             <controls:FloatingLabelInput 
                     x:Name="streetEntry"
                     Grid.Column="0" 
-                    Grid.Row="11"
+                    Grid.Row="14"
                     Text="{Binding Street}"
                     Title="Street + Number" 
                     Margin="0,0,20,20"
@@ -299,7 +333,7 @@
 
             <Button ClassId="streetSwap" 
                     Grid.Column="1"
-                    Grid.Row="11"
+                    Grid.Row="14"
                     Image="icon_swap" 
                     Clicked="OnSwapClicked"
                     Margin="0,0,0,15" >
@@ -311,7 +345,7 @@
             <controls:FloatingLabelInput 
                     x:Name="cityEntry"
                     Grid.Column="0" 
-                    Grid.Row="12"
+                    Grid.Row="15"
                     Text="{Binding City}" 
                     Title="City + Postal code" 
                     Margin="0,0,20,20"
@@ -320,7 +354,7 @@
 
             <Button ClassId="citySwap" 
                     Grid.Column="1"
-                    Grid.Row="12"
+                    Grid.Row="15"
                     Image="icon_swap" 
                     Clicked="OnSwapClicked"
                     Margin="0,0,0,15" >
@@ -332,7 +366,7 @@
             <controls:FloatingLabelInput 
                     x:Name="extraEntry" 
                     Grid.Column="0" 
-                    Grid.Row="13"
+                    Grid.Row="16"
                     Text="{Binding Extra}"
                     Title="Extra" 
                     Margin="0,0,20,20"
@@ -341,7 +375,7 @@
 
             <Button ClassId="extraSwap" 
                     Grid.Column="1"
-                    Grid.Row="13"
+                    Grid.Row="16"
                     Image="icon_swap" 
                     Clicked="OnSwapClicked"
                     Margin="0,0,0,15" >
@@ -352,7 +386,7 @@
             <!-- IMAGE -->
 
             <Image Source="{Binding Filename}" 
-                   Grid.Row="14" 
+                   Grid.Row="17" 
                    Grid.ColumnSpan="2" >
             </Image>
 
@@ -362,7 +396,7 @@
 
             <StackLayout 
                 Orientation="Horizontal" 
-                Grid.Row="15" 
+                Grid.Row="18" 
                 Grid.ColumnSpan="2">
 
                 <Label  x:Name="mailLabel" 
@@ -377,23 +411,44 @@
                             Color="#BA0C2F" 
                             VerticalOptions="Center" >
                 </CheckBox>
-                
+
+                <ActivityIndicator x:Name="activityindicator2"  
+                       IsRunning="False"  
+                       IsEnabled="False"  
+                       IsVisible="False"  
+                       Color="Red"  
+                       BackgroundColor="Transparent"/>
+
             </StackLayout>
 
-
             
+
+
             <!-- Layout buttons in two columns -->
             
-            <Grid ColumnDefinitions="*,*" 
-                  Padding="0,0,0,20" 
-                  Grid.Row="16" 
-                  Grid.ColumnSpan="2">
+            <Grid 
+                  Padding="0,0,0,0" 
+                  Grid.Row="19" 
+                  Grid.ColumnSpan="2" >
 
-                <Button Text="Save"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Button x:Name="save" 
+                        Text="Save"
+                        Grid.Column="0"
+                        Clicked="save_Clicked"
                         Command="{Binding SaveBusinessCard}">
                 </Button>
 
-                <Button Grid.Column="1"
+                <Button x:Name="delete"  
+                        Grid.Column="1"
                         Text="Delete"
                         Command="{Binding DeleteBusinessCard}">
                 </Button>

@@ -9,7 +9,10 @@ using Android.OS;
 
 namespace Businesscards.Droid
 {
-    [Activity(Label = "Card Scanner", Icon = "@mipmap/icon", Theme = "@style/MainTheme", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    // Set Name of app, icon of app... ScreenOrientation: make impossible for app to rotate even when autorotate of phone is enabled.
+    //  https://docs.microsoft.com/en-us/xamarin/xamarin-forms/user-interface/layouts/device-orientation?tabs=windows
+
+    [Activity(Label = "Card Scanner", Icon = "@mipmap/icon", Theme = "@style/MainTheme", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)

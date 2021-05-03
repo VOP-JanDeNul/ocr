@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -35,7 +36,6 @@ namespace Businesscards.Services.Camera
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error in GaleryPhotoAsync" + ex.ToString());
                 throw new CameraException(ex.ToString());
             }
         }
@@ -46,22 +46,21 @@ namespace Businesscards.Services.Camera
             PhotoPath = null;
             if (MediaPicker.IsCaptureSupported)
             {
-                Console.WriteLine("Capture is supported");
+                Debug.WriteLine("Capture is supported");
             }
             else
             {
-                Console.WriteLine("Capture is not supported!");
+                Debug.WriteLine("Capture is not supported!");
             }
             try
             {
                 var photo = await MediaPicker.CapturePhotoAsync();
                 await LoadPhotoAsync(photo);
-                Console.WriteLine($"CapturePhotoAsync COMPLETED: {PhotoPath}");
+                Debug.WriteLine($"CapturePhotoAsync COMPLETED: {PhotoPath}");
             }
             catch (Exception ex)
             {
                 throw new CameraException(ex.ToString());
-
             }
         }
 
@@ -90,7 +89,6 @@ namespace Businesscards.Services.Camera
             catch (Exception ex)
             {
                 throw new CameraException(ex.ToString());
-
             }
         }
     }

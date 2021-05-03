@@ -1,9 +1,7 @@
-﻿using Businesscards.Views;
+﻿using Businesscards.Data;
 using System;
 using System.IO;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using Businesscards.Data;
 
 namespace Businesscards
 {

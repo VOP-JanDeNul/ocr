@@ -2,8 +2,10 @@
 using Businesscards.Services.ImageTransformation;
 using Businesscards.Services.Mail;
 using Businesscards.Services.Rest;
+using Businesscards.Services.Toast;
 using Businesscards.Validations;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -16,10 +18,10 @@ namespace Businesscards.ViewModels
         private ValidatableObject<string> _name;
         private string _nature;
         private string _jobtitle;
-        private string _phone;
-        private string _mobile;
+        private ValidatableObject<string> _phone;
+        private ValidatableObject<string> _mobile;
         private ValidatableObject<string> _email;
-        private string _fax;
+        private ValidatableObject<string> _fax;
         private string _street;
         private string _city;
         private string _filename;
@@ -78,23 +80,21 @@ namespace Businesscards.ViewModels
                 RaisePropertyChanged(() => JobTitle);
             }
         }
-        public string Phone
+        public ValidatableObject<string> Phone
         {
             get { return _phone; }
             set
             {
                 _phone = value;
-                Card.Phone = value;
                 RaisePropertyChanged(() => Phone);
             }
         }
-        public string Mobile
+        public ValidatableObject<string> Mobile
         {
             get { return _mobile; }
             set
             {
                 _mobile = value;
-                Card.Mobile = value;
                 RaisePropertyChanged(() => Mobile);
             }
         }
@@ -107,13 +107,12 @@ namespace Businesscards.ViewModels
                 RaisePropertyChanged(() => Email);
             }
         }
-        public string Fax
+        public ValidatableObject<string> Fax
         {
             get { return _fax; }
             set
             {
                 _fax = value;
-                Card.Fax = value;
                 RaisePropertyChanged(() => Fax);
             }
         }
@@ -237,10 +236,10 @@ namespace Businesscards.ViewModels
                 Name.Value = value.Name;
                 Nature = value.Nature;
                 JobTitle = value.Jobtitle;
-                Phone = value.Phone;
-                Mobile = value.Mobile;
+                Phone.Value = value.Phone;
+                Mobile.Value = value.Mobile;
                 Email.Value = value.Email;
-                Fax = value.Fax;
+                Fax.Value = value.Fax;
                 Street = value.Street;
                 City = value.City;
                 Extra = value.Extra;
@@ -254,14 +253,17 @@ namespace Businesscards.ViewModels
         // Initialize ViewModel, navigation and commands
         public BusinesscardEntryViewModel(INavigation navigation)
         {
-            this.Navigation = navigation;
-            this.restService = new RestService();
-            this.imageService = new ImageTransformationService();
-            this.mailService = new MailService();
+            Navigation = navigation;
+            restService = new RestService();
+            imageService = new ImageTransformationService();
+            mailService = new MailService();
 
             _company = new ValidatableObject<string>();
             _name = new ValidatableObject<string>();
             _email = new ValidatableObject<string>();
+            _phone = new ValidatableObject<string>();
+            _mobile = new ValidatableObject<string>();
+            _fax = new ValidatableObject<string>();
 
             Card = new Businesscard();
 
@@ -272,15 +274,23 @@ namespace Businesscards.ViewModels
         }
 
         // Initialize ViewModel, navigation and commands using an existing businesscard
-        public BusinesscardEntryViewModel(INavigation navigation, Businesscard card) : this(navigation)
+        public BusinesscardEntryViewModel(INavigation navigation, Businesscard card)
         {
-            this.Navigation = navigation;
-            this.restService = new RestService();
-            this.imageService = new ImageTransformationService();
-            this.mailService = new MailService();
+            Navigation = navigation;
+            restService = new RestService();
+            imageService = new ImageTransformationService();
+            mailService = new MailService();
+
+            _company = new ValidatableObject<string>();
+            _name = new ValidatableObject<string>();
+            _email = new ValidatableObject<string>();
+            _phone = new ValidatableObject<string>();
+            _mobile = new ValidatableObject<string>();
+            _fax = new ValidatableObject<string>();
 
             Card = card;
             _filename = imageService.GetImagePath(Card.Base64);
+
             SaveBusinessCard = new Command(async () => await OnSave());
             DeleteBusinessCard = new Command(async () => await OnDelete());
 
@@ -306,23 +316,37 @@ namespace Businesscards.ViewModels
                     Card.Company = _company.Value;
                     Card.Name = _name.Value;
                     Card.Email = _email.Value;
+                    Card.Phone = _phone.Value;
+                    Card.Mobile = _mobile.Value;
+                    Card.Fax = _fax.Value;
                     Card.Date = DateTime.Now.ToLocalTime();
                     Card.Origin = user.OriginUser;
 
                     //Uncomment this when testing endpoint(endpoint code)
                     try
                     {
+                        //DependencyService.Get<IToast>().ShortAlert("Card was sent succesfully.");
+                        MessagingCenter.Send(this, "endpoint");
                         // try to send the card to the endpoint
-                        await restService.SendCardsAsync(_card);
+                        imageService.PrintCard(Card);
+                        await restService.SendCardsAsync(Card);
+
+                        //DependencyService.Get<IToast>().ShortAlert("Card was sent succesfully.");
+
+
                         // if succesfull delete is from the database
+                        await App.Database.DeleteBusinesscardAsync(Card);
+                        MessagingCenter.Send(this, "endpoint_done");
+                        DependencyService.Get<IToast>().ShortAlert("Card was sent succesfully.");
                     }
                     catch (RestException)
                     {
                         // if not succesfull add to the database
                         await App.Database.SaveBusinesscardAsync(_card);
+                        DependencyService.Get<IToast>().LongAlert("Something went wrong sending the card.\nPlease check your internet connection and try again.");
                     }
 
-                    //await App.Database.SaveBusinesscardAsync(_card);
+                    await Task.Delay(2000);
                     await Navigation.PopAsync();
 
                     if (IsMailChecked)
@@ -332,7 +356,7 @@ namespace Businesscards.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("OnSave error" + ex.ToString());
+                    Debug.WriteLine("OnSave error" + ex.ToString());
                 }
             }
             else
@@ -354,7 +378,7 @@ namespace Businesscards.ViewModels
             }
             catch (Exception)
             {
-                Console.WriteLine("Failed to delete card");
+                Debug.WriteLine("Failed to delete card");
             }
         }
 
@@ -362,13 +386,19 @@ namespace Businesscards.ViewModels
         public ICommand ValidateCompanyCommand => new Command(() => ValidateCompany());
         public ICommand ValidateNameCommand => new Command(() => ValidateName());
         public ICommand ValidateEmailCommand => new Command(() => ValidateEmail());
+        public ICommand ValidatePhoneCommand => new Command(() => ValidatePhone());
+        public ICommand ValidateMobileCommand => new Command(() => ValidateMobile());
+        public ICommand ValidateFaxCommand => new Command(() => ValidateFax());
         private bool Validate()
         {
             bool isValidCompany = ValidateCompany();
             bool isValidName = ValidateName();
             bool isValidEmail = ValidateEmail();
+            bool isValidPhone = ValidatePhone();
+            bool isValidMobile = ValidateMobile();
+            bool isValidFax = ValidateFax();
 
-            return isValidCompany && isValidName && isValidEmail;
+            return isValidCompany && isValidName && isValidEmail && isValidPhone && isValidMobile && isValidFax;
         }
 
         private bool ValidateCompany()
@@ -383,12 +413,27 @@ namespace Businesscards.ViewModels
         {
             return _email.Validate();
         }
+        private bool ValidatePhone()
+        {
+            return _phone.Validate();
+        }
+        private bool ValidateMobile()
+        {
+            return _mobile.Validate();
+        }
+        private bool ValidateFax()
+        {
+            return _fax.Validate();
+        }
         private void AddValidations()
         {
             _company.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Company is required." });
             _name.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Name is required." });
             _email.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Email address is required." });
+            _email.Validations.Add(new IsValidEmailRule<string> { ValidationMessage = "Not a valid email address." });
+            _phone.Validations.Add(new IsValidPhoneRule<string> { ValidationMessage = "Not a valid phone number." });
+            _mobile.Validations.Add(new IsValidPhoneRule<string> { ValidationMessage = "Not a valid mobile number." });
+            _fax.Validations.Add(new IsValidPhoneRule<string> { ValidationMessage = "Not a valid fax number." });
         }
-
     }
 }

@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -25,7 +27,7 @@ namespace Businesscards.Services.OCR
         protected Dictionary<string, int> emailDic;
         protected Dictionary<string, int> faxDic;
         protected Dictionary<string, int> addressDic;
-        private string extraField = "";
+        protected string extraField = "";
 
         private readonly Dictionary<string, int>[] dictionariesArray;
 
@@ -36,9 +38,10 @@ namespace Businesscards.Services.OCR
         protected Regex regexPhoneFilterInternational;
         private Regex regexNameFilter;
         private Regex regexAddressFilter;
-        private Regex regexCompanyFilter;
+        //private Regex regexCompanyFilter;
         private Regex regexAddress;
         private Regex regexWebsite;
+        private Regex regexFilterBigLines;
 
         //host email adresses that are not a company
         static private readonly string[] emailadresses = { "gmail", "skynet", "telenet", "icloud", "outlook", "yahoo", "fastmail", "protonmail" };
@@ -59,20 +62,22 @@ namespace Businesscards.Services.OCR
             extraField = "";
 
             //regex
-            regexPhone = new Regex(@"([+.\/0-9]{8,})");
-            regexPhoneFilter = new Regex(@"[;,\t\-\(\)\{\}\[\]\.\* a-z]");
-            regexPhoneFilterInternational = new Regex(@"\([^()]*\)");
-            regexNameFilter = new Regex(@"[;,\-\+\(\)\{\}\[\]\*0-9]");
-            regexAddressFilter = new Regex(@"[;,\+\(\)\{\}\[\]\.\*]");
-            regexCompanyFilter = new Regex(@"[;,\+\(\)\{\}\[\]\.\* ]");
-            regexAddress = new Regex(@"[ a-zA-Z-]*([0-9]+)[ a-zA-Z-]*");
+            regexPhone = new Regex(@"([+\/0-9]{9,})");
+            regexPhoneFilter = new Regex(@"[^0-9+]");
+            regexPhoneFilterInternational = new Regex(@"\(0\)");
+            regexNameFilter = new Regex(@"[^ \-a-zA-Z]");
+            regexAddressFilter = new Regex(@"[^ \.\-\/a-zA-Z0-9]");
+            //regexCompanyFilter = new Regex(@"[^ a-zA-Z0-9]");
+            regexAddress = new Regex(@"[ \.\/a-zA-Z\-]*([0-9]+)[ \.\/a-zA-Z\-]*");
             regexWebsite = new Regex(@"(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})");
-            dictionariesArray = new Dictionary<string, int>[] { companyDic, nameDic, jobTitleDic, phoneDic, mobileDic, emailDic, faxDic, addressDic, natureDic };
+            regexFilterBigLines = new Regex(@"[^\\\/\(\)\+@0-9a-zA-Z]{3,}");
+            dictionariesArray = new Dictionary<string, int>[] { companyDic, nameDic, jobTitleDic, addressDic };
         }
 
+        //reset all dictionaries
         public void resetOCR()
         {
-            Console.WriteLine("AOCRService - reseted OCR");
+            Debug.WriteLine("AOCRService - reseted OCR");
             //reset all dictionaries
             unkown.Clear();
 
@@ -90,11 +95,12 @@ namespace Businesscards.Services.OCR
 
         public abstract Task<Businesscard> getCard(string imagePath);
 
-        protected Businesscard analyzeText(string[] lines)
+        //analyze all lines of text
+        async protected Task<Businesscard> analyzeText(string[] lines)
         {
             try
             {
-                Console.WriteLine("AOCRService - started analyzing the text");
+                Debug.WriteLine("AOCRService - started analyzing the text");
                 string previous = "";
                 foreach (string line in lines)
                 {
@@ -144,12 +150,16 @@ namespace Businesscards.Services.OCR
                 //assigning to random dictionaries
                 foreach (string line in unkown)
                 {
+                    if (line.Length < 10)
+                    {
+                        continue;
+                    }
                     bool breaked = false;
                     foreach (Dictionary<string, int> dic in dictionariesArray)
                     {
                         if (dic.Count() == 0)
                         {
-                            Console.WriteLine("random: " + line);
+                            Debug.WriteLine("random: " + line);
                             addValue(dic, line);
                             breaked = true;
                             break;
@@ -158,14 +168,14 @@ namespace Businesscards.Services.OCR
                     //extra field only when all dictionaries are used. Always a chance to guess correctly
                     if (!breaked && extraField.Equals(""))
                     {
-                        Console.WriteLine("extra: " + line);
+                        Debug.WriteLine("extra: " + line);
                         extraField = line;
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine("error" + e);
+                Debug.WriteLine("AnalyzeText Exception" + ex.ToString());
             }
             return makeCard();
         }
@@ -186,10 +196,10 @@ namespace Businesscards.Services.OCR
             if (address?.Length > 1)
             {
                 string city = "";
-            
-            for (int i = 1; i < address.Length; i++)
+
+                for (int i = 1; i < address.Length; i++)
                 {
-                    city += " "+address[i];
+                    city += " " + address[i];
                 }
                 card.City = city.Trim();
             }
@@ -199,10 +209,11 @@ namespace Businesscards.Services.OCR
             return card;
         }
 
+        //call all filter methods Some fields dont have a specific rule and will not be assigned with it
         private bool filterOnAll(string line, string previous = "")
         {
             bool assigned = false;
-            Console.WriteLine("AOCRService filter:" + line);
+            Debug.WriteLine("AOCRService filter:" + line);
             //first the filters independently from others
             assigned |= filterOnEmail(line);
             assigned |= filterOnPhone(line);
@@ -245,13 +256,26 @@ namespace Businesscards.Services.OCR
             //if both are an address -> together they form the full address
             if (previousIsAddress && currentIsAddress)
             {
+                foreach (string address in addressDic.Keys)
+                {
+                    if (address.Contains(previous) && !address.Contains(previous + ",") && address.Contains(current))
+                    {
+                        addValue(addressDic, address.Replace(previous, previous + ","), 15);
+                        break;
+                    }
+                }
                 addValue(addressDic, previous + ", " + current, 5);
+
             }
             return matched;
         }
 
         private bool filterOnName(string name)
         {
+            if (name.Contains("@") || regexWebsite.Match(name).Success)
+            {
+                return false;
+            }
             name = regexNameFilter.Replace(name, string.Empty);
             //when name is already in list and occurs once secluded, high chance
             if (nameDic.ContainsKey(name))
@@ -274,20 +298,25 @@ namespace Businesscards.Services.OCR
                     }
                 }
             }
-            return false;
+            return addIfHighestIsSubstring(nameDic, name);
         }
 
         private bool filterOnCompany(string company)
         {
+            if(company.Contains("@") || regexWebsite.Match(company).Success)
+            {
+                return false;
+            }
             //when company is already in list and occurs once secluded, high chance
-            //addressFilter because company can contain numbers
-            string companyFiltered = regexCompanyFilter.Replace(company, string.Empty);
-            if (companyDic.ContainsKey(companyFiltered) || companyDic.ContainsKey(companyFiltered.Replace(" ",string.Empty)))
+            //Debug.WriteLine("company uitgeschreven: " + company);
+            //string companyFiltered = regexCompanyFilter.Replace(company, string.Empty);
+            //Debug.WriteLine("company uitgeschreven: " + companyFiltered);
+            if (companyDic.ContainsKey(company) || companyDic.ContainsKey(company.Replace(" ", string.Empty)))
             {
                 addValue(companyDic, company, 10);
-                return true;
             }
-            return false;
+            //Debug.WriteLine("company uitgeschreven: "+ companyFiltered);
+            return addIfHighestIsSubstring(companyDic, company);
         }
 
         private bool filterOnWebsite(string website)
@@ -360,49 +389,108 @@ namespace Businesscards.Services.OCR
             return false;
         }
 
+        //check if current highest of the dictionary is a substring of the newHighest
+        private bool addIfHighestIsSubstring(Dictionary<string, int> dic, string newHighest)
+        {
+            if (dic.Count > 0)
+            {
+                string highest = getHighest(dic, false);
+                int score = Int32.Parse(getHighest(dic, false, true));
+
+                if (newHighest.Contains(highest))
+                {
+                    Debug.WriteLine("old string: " + highest + " new string: " + newHighest);
+                    addValue(dic, newHighest, score + 3);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        //correct easy optical mistakes in the email
+        protected string correctEmail(string email)
+        {
+            //most common OCR mistakes and why email can fail
+            email = email.Replace(" @ ", "@");
+            email = email.Replace("@@", "@");
+            email = email.Replace(" @", "@");
+            email = email.Replace("@ ", "@");
+            email = email.Replace("..", ".");
+            email = email.Replace(". ", ".");
+            email = email.Replace(" .", ".");
+            email = email.Replace(" . ", ".");
+            return email;
+        }
+
+        //split lines with random characters like | in the format of " | "
+        protected string [] splitBigLine(string line)
+        {
+            string[] splitted = regexFilterBigLines.Split(line);
+            return splitted;
+        }
+
+        //replace lines with random characters like | in the format of " | " to " "
+        protected string replaceBigLine(string line)
+        {
+            return regexFilterBigLines.Replace(line," ");
+        }
+
         private bool filterOnEmail(string email)
         {
-            //check if string we can cast string to MailAddress clas (beter than using regex, due to large email formats)
-            try
+
+            //foreach for formats like Email: example@example.com
+            foreach (string subEmail in email.Split(' '))
             {
-                string addr = new MailAddress(email).Address.Trim();
-                addValue(emailDic, addr);
-                string[] splitted = addr.Split('@');
-
-                //first section most likely contains name
-                string name = splitted[0].Replace('.', ' ');
-                addValue(nameDic, name, 3);
-
-                //add parts of the name also in nameDic, if name is J Doe we correct this in nameFilter
-                string[] names = name.Split(' ');
-                if (names.Length > 1)
+                if (!subEmail.Contains("@"))
                 {
-                    foreach (string n in names)
+                    continue;
+                }
+                try
+                {
+                    //check if string we can cast string to MailAddress clas (beter than using regex, due to large email formats)
+                    bool validation = new EmailAddressAttribute().IsValid(subEmail);
+                    if (validation)
                     {
-                        addValue(nameDic, n);
+                        addValue(emailDic, subEmail);
+                        string[] splitted = subEmail.Split('@');
+
+                        //first section most likely contains name
+                        string name = splitted[0].Replace('.', ' ');
+                        if (!name.Equals("info")) addValue(nameDic, name, 3);
+
+                        //add parts of the name also in nameDic, if name is J Doe we correct this in nameFilter
+                        string[] names = name.Split(' ');
+                        if (names.Length > 1)
+                        {
+                            foreach (string n in names)
+                            {
+                                if (!n.Equals("info")) addValue(nameDic, n);
+                            }
+                        }
+
+                        //seconde section most likely contains company name if not like gmail.com
+                        string possibleCompany = splitted[1].Split('.')[0];
+                        if (!emailadresses.Contains(possibleCompany))
+                        {
+                            addIfHighestIsSubstring(companyDic, possibleCompany);
+                            addValue(companyDic, possibleCompany, 3);
+                        }
                     }
-                }
+                    return validation;
 
-                //seconde section most likely contains company name if not like gmail.com
-                string possibleCompany = splitted[1].Split('.')[0];
-                if (!emailadresses.Contains(possibleCompany))
+                }
+                catch (Exception)
                 {
-                    addValue(companyDic, possibleCompany, 3);
+                    return false;
                 }
-
-                return true;
             }
-            catch (Exception)
-            {
-                return false;
-            }
-
+            return false;
         }
 
 
 
         //get string with highest score/ most likely to contain to right value
-        private string getHighest(Dictionary<string, int> dic, bool capitalize)
+        protected string getHighest(Dictionary<string, int> dic, bool capitalize, bool Score = false)
         {
             //default value
             string highest = "";
@@ -424,7 +512,14 @@ namespace Businesscards.Services.OCR
 
             }
             // capitalize the first character of every word
-            return capitalize ? Regex.Replace(highest, @"(^\w)|(\s\w)", m => m.Value.ToUpper()) : highest;
+            if (!Score)
+            {
+                return capitalize ? Regex.Replace(highest, @"(^\w)|(\s\w)", m => m.Value.ToUpper()) : highest;
+            }
+            else
+            {
+                return count.ToString();
+            }
         }
 
         //add score in dictionary for a certain string
@@ -438,26 +533,6 @@ namespace Businesscards.Services.OCR
             {
                 dic[key] += score;
             }
-        }
-
-        // Easy function used to print the card
-        public void PrintCard(Businesscard card)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Company: " + card.Company);
-            sb.AppendLine("Name: " + card.Name);
-            sb.AppendLine("Nature: " + card.Nature);
-            sb.AppendLine("JobTitle: " + card.Jobtitle);
-            sb.AppendLine("Phone: " + card.Phone);
-            sb.AppendLine("Mobile: " + card.Mobile);
-            sb.AppendLine("Email:" + card.Email);
-            sb.AppendLine("Fax: " + card.Fax);
-            sb.AppendLine("Street: " + card.Street);
-            sb.AppendLine("City: " + card.City);
-            sb.AppendLine("Date: " + card.Date);
-            sb.AppendLine("Origin: " + card.Origin);
-            sb.AppendLine("Extra: " + card.Extra);
-            Console.WriteLine(sb.ToString());
         }
 
         // Make an empty card
@@ -478,6 +553,26 @@ namespace Businesscards.Services.OCR
             card.Origin = "";
             card.Extra = "";
             return card;
+        }
+
+        // Easy function used to print the card
+        public void PrintCard(Businesscard card)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Company: " + card.Company);
+            sb.AppendLine("Name: " + card.Name);
+            sb.AppendLine("Nature: " + card.Nature);
+            sb.AppendLine("JobTitle: " + card.Jobtitle);
+            sb.AppendLine("Phone: " + card.Phone);
+            sb.AppendLine("Mobile: " + card.Mobile);
+            sb.AppendLine("Email:" + card.Email);
+            sb.AppendLine("Fax: " + card.Fax);
+            sb.AppendLine("Street: " + card.Street);
+            sb.AppendLine("City: " + card.City);
+            sb.AppendLine("Date: " + card.Date);
+            sb.AppendLine("Origin: " + card.Origin);
+            sb.AppendLine("Extra: " + card.Extra);
+            Debug.WriteLine(sb.ToString());
         }
     }
 }

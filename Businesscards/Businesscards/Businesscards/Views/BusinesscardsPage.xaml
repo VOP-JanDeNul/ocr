@@ -20,7 +20,8 @@
                         ItemsSource="{Binding Businesscards}"
                         Margin="20"
                         SelectionMode="Single"
-                        SelectionChanged="OnSelectionChanged">
+                        SelectedItem="{Binding SelectedCard}"
+                        SelectionChanged="CollectionView_SelectionChanged">
 
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical"

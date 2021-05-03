@@ -47,6 +47,14 @@ namespace Businesscards.Models
 
         }
 
+        public void deleteOriginTxt()
+        {
+            if (File.Exists(localPath))
+            {
+                File.Delete(localPath);
+            }
+        }
+
         public string getOriginWithTxt()
         {
             if (File.Exists(localPath))

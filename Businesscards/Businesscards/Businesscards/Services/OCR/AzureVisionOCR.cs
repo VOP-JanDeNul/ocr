@@ -3,6 +3,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace Businesscards.Services.OCR
             cv = new ComputerVisionClient(new ApiKeyServiceClientCredentials(Constants.AVSubscriptionKey)) { Endpoint = Constants.AVEndPoint };
         }
 
+        // Receives the image path and returns the businesscard
         public override async Task<Businesscard> getCard(string imagePath)
         {
             try
@@ -23,13 +25,13 @@ namespace Businesscards.Services.OCR
                 using (var image = File.OpenRead(imagePath))
                 {
                     Businesscard card = MakeEmptyCard();
-                    Console.WriteLine("AZUREVISION - Received image");
+                    Debug.WriteLine("AZUREVISION - Received image");
                     var textHeaders = await cv.ReadInStreamAsync(image);
                     string operationLocation = textHeaders.OperationLocation;
                     string operationId = operationLocation.Substring(operationLocation.Length - 36);
                     // Extract the text
                     ReadOperationResult results = null;
-                    Console.WriteLine("AZUREVISION - sending image to Azure Service");
+                    Debug.WriteLine("AZUREVISION - sending image to Azure Service");
                     do
                     {
                         results = await cv.GetReadResultAsync(Guid.Parse(operationId));
@@ -37,8 +39,8 @@ namespace Businesscards.Services.OCR
                     while ((results.Status == OperationStatusCodes.Running ||
                         results.Status == OperationStatusCodes.NotStarted));
 
-                    Console.WriteLine("AZUREVISION - received information from Azure Service");
-                    card = analyzeText(formatResults(results));
+                    Debug.WriteLine("AZUREVISION - received information from Azure Service");
+                    card = await analyzeText(formatResults(results));
                     PrintCard(card);
                     return card;
                 }
